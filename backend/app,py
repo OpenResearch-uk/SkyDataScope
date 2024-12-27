@@ -1,0 +1,29 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from sky_calculator import SkyCalculator
+from datetime import datetime
+
+app = Flask(__name__)
+CORS(app)
+
+calculator = SkyCalculator()
+
+@app.route('/api/sky-objects', methods=['GET'])
+def get_sky_objects():
+    try:
+        lat = float(request.args.get('lat'))
+        lon = float(request.args.get('lon'))
+        
+        if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+            return jsonify({'error': 'Invalid coordinates'}), 400
+            
+        objects = calculator.calculate_visibility(lat, lon)
+        return jsonify(objects)
+        
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Invalid parameters'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
