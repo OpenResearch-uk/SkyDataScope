@@ -37,3 +37,4 @@ __pycache__/
 
 # System Files
 Thumbs.db
+/backend/node_modules
